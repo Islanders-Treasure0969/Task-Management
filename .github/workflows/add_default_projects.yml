@@ -1,0 +1,32 @@
+name: Issue をプロジェクトに追加
+
+on:
+  # Issue が作成された時に実行
+  issues:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: プロジェクト情報を取得
+        id: get_project_info
+        uses: api-actions/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+          installation_id: ${{ secrets.INSTALLATION_ID }}
+          # プロジェクトID
+          repository: ${{ github.repository }}
+          # プロジェクト名
+          project_name: "@Islanders-Treasure0969's untitled project"
+
+      - name: Issue をプロジェクトに追加
+        uses: "actions/add-to-project@v1"
+        with:
+          project_id: ${{ steps.get_project_info.outputs.project_id }}
+          issue_number: ${{ github.event.issue.number }}
+
